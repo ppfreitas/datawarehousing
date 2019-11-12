@@ -1,4 +1,4 @@
-# datawarehousing
+# Data Warehousing
 
 ## Part (1)
 
