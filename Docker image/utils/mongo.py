@@ -14,7 +14,7 @@ def get_months(season):
     year = str(season)
     url = "https://www.basketball-reference.com/leagues/NBA_" + year + "_games.html"
     html = urlopen(url)
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html)
     
     links = [a['href'] for a in soup.find_all('a', href=True)]
     link_months = [link for link in links if ('NBA_'+year+'_games-' in link) and ('html' in link)]
@@ -23,7 +23,7 @@ def get_months(season):
 def get_list_of_games(urlarg):
     url = "https://www.basketball-reference.com"+urlarg
     html = urlopen(url)
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html)
 
     links = [a['href'] for a in soup.find_all('a', href=True)]
     link_bs = [link for link in links if ('boxscore' in link) and ('html' in link)]
@@ -47,7 +47,7 @@ def get_game_score(soup):
     
     for tr in soup.find_all(id='all_line_score'):
         comment = tr.find(text=lambda text:isinstance(text, Comment))
-        commentsoup = BeautifulSoup(comment ,'html.parser')
+        commentsoup = BeautifulSoup(comment , 'lxml')
         
     rows = commentsoup.findAll('tr')
     game_score = [[td.getText() for td in rows[i].findAll('td')]
@@ -65,7 +65,7 @@ def get_game_score(soup):
 
 client = pymongo.MongoClient("localhost", 27017)
 
-db = client['nba_official2']
+db = client['nba_official_docker']
 cursor = db.games.find({},{"game_id":1,"_id":False})
 old_games = ['/boxscores/' + doc['game_id'] + '.html' for doc in cursor]
 
@@ -79,38 +79,21 @@ for i in link_months:
 games = [game for game in games if game not in old_games]
 
 games_dict_list = []
-
-if len(games) != 0:
-    for i in range(len(games)):
-        url = "https://www.basketball-reference.com" + games[i]
-        html = urlopen(url)
-        soup = BeautifulSoup(html, 'html.parser')
-        game_df, teamA, teamH = get_game_score(soup)
-        teamA_stats = get_players_score(teamA)
-        teamH_stats = get_players_score(teamH)
-        game_id = url[-17:-5]
-        game_date = url[-17:-9]
-        
-        game_dict = {'game_id':game_id, 'game_date':game_date, 'teamA':teamA,
-                     'teamH':teamH, 'game_score':game_df.to_dict(orient='index'),
-                    'teamA_stats':teamA_stats.to_dict(orient='index'),
-                    'teamH_stats':teamH_stats.to_dict(orient='index')}
-        games_dict_list.append(game_dict)
+for i in range(len(games)):
+    url = "https://www.basketball-reference.com" + games[i]
+    html = urlopen(url)
+    soup = BeautifulSoup(html)
+    game_df, teamA, teamH = get_game_score(soup)
+    teamA_stats = get_players_score(teamA)
+    teamH_stats = get_players_score(teamH)
+    game_id = url[-17:-5]
+    game_date = url[-17:-9]
     
-#
-#test = db.nbastats.find_one({'firstname': 'Maria'})
-#
-#test = db.list_collection_names()
-#db.people
-#
-#db.count_collections()
-#
-#
-#result = db.people.insert_many(testando)
-#
-#testando = [{'nome':'Pedro', 'idade':12}, {'nome': 'Jul', 'idade':23}]
-#
-#
-#result.inserted_ids
-#
-#db.people.count_documents({})
+    game_dict = {'game_id':game_id, 'game_date':game_date, 'teamA':teamA,
+                 'teamH':teamH, 'game_score':game_df.to_dict(orient='index'),
+                'teamA_stats':teamA_stats.to_dict(orient='index'),
+                'teamH_stats':teamH_stats.to_dict(orient='index')}
+    games_dict_list.append(game_dict)
+    
+db.games.insert_many(games_dict_list)
+db.games.count_documents({})

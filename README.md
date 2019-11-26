@@ -1,15 +1,23 @@
-# Data Warehousing
+# Datawarehousing final project
+by Pedro Freitas and Alex Pappas
 
-## Part (1)
+## Part 1
 
-Create a system that:
+### Introduction
+First, we scrape the Basketball Reference to get data on all nba games of the season.
+Then, we store it in a MongoDB.
 
-1. Collects data from the internet (either via scraping or using an API).
-2. Puts that data into a data store of some sort.
-3. Can run on a server.
+### Reproducing it
 
-The data collection should be something that can either be run multiple times or periodically (for example, every day or every week) to fill the data store with the latest of this data from the web, or is something that runs continuously and continuously update the data store.
+To install MongoDB
+```shell
+docker run -d --name namedb -p 27017:27017 mongo
+docker exec -it mongodb bash
+```
 
-## Part (2)
+Run our project docker container
 
-Create a Dashboard and run it on a server so it is publically available on the web.
+```shell
+docker run --name nbaseason -d --net host ppfreitas/nbaseason
+```
+
