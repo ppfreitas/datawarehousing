@@ -19,7 +19,6 @@ sh get-docker.sh
 To install MongoDB
 ```shell
 docker run -d --name mongodb -p 27017:27017 mongo
-docker exec -it mongodb bash
 ```
 Run our project docker container
 
