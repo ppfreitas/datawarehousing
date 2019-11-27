@@ -18,3 +18,8 @@ systemctl restart cron
 # run everyday at 5am
 MAILTO="pp_freitas@hotmail.com"
 0 5 * * * python update.py
+
+docker build -t ppfreitas/nbastats .
+docker push ppfreitas/nbastats
+
+docker exec -it nbaseason bash
