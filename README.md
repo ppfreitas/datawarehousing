@@ -23,7 +23,7 @@ docker run -d --name mongodb -p 27017:27017 mongo
 Run our project docker container
 
 ```shell
-docker run --name nbaseason --net host ppfreitas/nbaseason
+docker run --name nbastats --net host ppfreitas/nbastats
 ```
 A "Done" message will appear when it is done. It can take a few minutes the first time it loads an empty database. 
 
@@ -32,6 +32,6 @@ To check if loading was done correctly
 ```shell
 docker exec -it mongodb bash
 mongo
-use database
+use docker_test
 db.games.count()
 ```
