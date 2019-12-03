@@ -34,7 +34,7 @@ To check if loading was done correctly, we can to our mongodb bash and manually 
 ```shell
 docker exec -it mongodb bash
 mongo
-use docker_test
+use season2020
 db.games.count()
 ```
 
