@@ -96,7 +96,10 @@ if len(games) != 0:
                     'teamA_stats':teamA_stats.to_dict(orient='index'),
                     'teamH_stats':teamH_stats.to_dict(orient='index')}
         games_dict_list.append(game_dict)
-    
+
+print("Done!")
+db.people.count_documents({})
+
 #
 #test = db.nbastats.find_one({'firstname': 'Maria'})
 #

@@ -63,9 +63,11 @@ def get_game_score(soup):
     
     return pd.DataFrame(game_score, columns=header).set_index('\xa0'), teamA, teamH
 
+
+
 client = pymongo.MongoClient("localhost", 27017)
 
-db = client['docker_test']
+db = client['season2020']
 cursor = db.games.find({},{"game_id":1,"_id":False})
 old_games = ['/boxscores/' + doc['game_id'] + '.html' for doc in cursor]
 
@@ -79,7 +81,7 @@ for i in link_months:
 games = [game for game in games if game not in old_games]
 
 games_dict_list = []
-for i in range(10):
+for i in range(len(games)):
     url = "https://www.basketball-reference.com" + games[i]
     html = urlopen(url)
     soup = BeautifulSoup(html, 'lxml')

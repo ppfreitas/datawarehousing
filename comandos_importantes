@@ -9,6 +9,8 @@ systemctl status cron
 #configure jobs
 nano /etc/crontab
 
+
+
 # examples
 30 4 * * * /path/to/script/backup-script.sh
 0 18 1 * * /path/to/script/backup-script.sh
@@ -16,6 +18,7 @@ nano /etc/crontab
 systemctl restart cron
 
 # run everyday at 5am
+
 MAILTO="pp_freitas@hotmail.com"
 0 5 * * * python update.py
 
@@ -23,3 +26,5 @@ docker build -t ppfreitas/nbastats .
 docker push ppfreitas/nbastats
 
 docker exec -it nbaseason bash
+
+docker restart nbaseason
