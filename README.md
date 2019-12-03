@@ -38,7 +38,7 @@ use docker_test
 db.games.count()
 ```
 
-Final step is to setup cron to update oud database daily. To do so, run ```shell crontab -e``` and add the following command to your cron file 
+Final step is to setup cron to update oud database daily. To do so, run ```crontab -e``` and add the following command to your cron file 
 
 ```shell
 0 8 * * * docker restart nbaseason
