@@ -19,12 +19,12 @@ sh get-docker.sh
 To install MongoDB
 ```shell
 docker run -d --name mongodb -p 27017:27017 mongo
-docker exec -it mongodb bash
 ```
-Run our project docker container
+
+Then our project can be run from docker container
 
 ```shell
-docker run --name nbaseason --net host ppfreitas/nbaseason
+docker run --name nbaseason --net host ppfreitas/nbastats
 ```
 A "Done" message will appear when it is done. It can take a few minutes the first time it loads an empty database. 
 
