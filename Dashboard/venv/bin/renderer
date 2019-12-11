@@ -1,4 +1,4 @@
-#!/home/alex/Downloads/nba/venv/bin/python3
+#!/home/alex/Downloads/datawarehousing/Dashboard/venv/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'dash==1.6.1','console_scripts','renderer'
 __requires__ = 'dash==1.6.1'
 import re

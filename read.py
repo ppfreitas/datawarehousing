@@ -11,7 +11,7 @@ import numpy as np
 
 client = pymongo.MongoClient("localhost", 27017)
 
-db = client['nba_official']
+db = client['season2020']
 test = db.games.find()
 
 def player_avg_stat(player, stat):
