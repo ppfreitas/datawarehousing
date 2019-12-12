@@ -6,10 +6,14 @@ body {
   color: #222;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h3, h4, h5, h6 {
   font-weight: inherit;
 }
 
+h2 {
+  font-weight: inherit;
+  background-color:lightblue
+}
 
 .layout {
   width: 85%;
@@ -24,11 +28,9 @@ h1, h2, h3, h4, h5, h6 {
 .stats_font {
 	font-weight: bold;
 	margin-bottom: 10px;
-  margin-top: 10px;
-  font-size: 35px;
+    margin-top: 10px;
+    font-size: 35px;
 }
-
-
 
 .firstteam {
   width: 30%;
@@ -40,7 +42,6 @@ h1, h2, h3, h4, h5, h6 {
   width: 40%;
   display:inline-block;
   text-align:center;
-
 
 }
 
@@ -61,8 +62,11 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 15px;
 }
 
-
 .Away_Team {
   font-weight: 900;
   margin-bottom: 15px;
+}
+
+.data_frame {
+    font-family: "Raleway", Helvetica, sans-serif;
 }
