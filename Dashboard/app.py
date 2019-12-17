@@ -54,12 +54,76 @@ def get_avgs_dataframe():
         final_list.append(store)
     return pd.DataFrame(final_list, columns=(['Players'] +stats)).sort_values('PTS', ascending=False)
 
+def get_team_totals():
+    cursor3 = db.games.find({})
+    list_games = [i for i in cursor3]
+    store_df = pd.DataFrame()
+    for match in list_games:
+        
+        game_id = match['game_id']
+        date = match['game_date']
+        team_a =  match['teamA']
+        team_b =  match['teamH']
+    
+        df_a = pd.DataFrame.from_dict(match['teamA_stats'], orient='index')
+        df_a.dropna(inplace=True)
+        df_b = pd.DataFrame.from_dict(match['teamH_stats'], orient='index')
+        df_b.dropna(inplace=True)
+        df_a['Away'] = 1
+        df_b['Away'] = 0
+    
+        col_stats = ['Away','FG','FGA','3P','3PA', 'FT', 'FTA',
+                     'TRB','ORB','DRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
+    
+        df_a = pd.DataFrame(df_a[col_stats].astype('int32').sum())
+        df_a.columns = [team_a]
+        # df_a['Away'] = 1
+        df_b = pd.DataFrame(df_b[col_stats].astype('int32').sum())
+        df_b.columns = [team_b]
+        # df_b['Away'] = 0
+        df_a.loc['Opp',:]=team_b
+        df_b.loc['Opp',:]=team_a
+    
+        totals = pd.concat([df_a, df_b], axis=1, sort=False)
+        totals = totals.transpose()
+    
+        store_df = pd.concat([store_df,totals])
+    return store_df
+
+def get_avg_team_totals():
+    mean_df = pd.DataFrame()
+    team_list = teams
+    stats = col_stats
+    for team in team_list:
+        for stat in stats:
+            label = 'Avg_'+ stat 
+            mean_df.loc[team,label] = team_totals.loc[team,stat].sum()/team_totals.loc[team,stat].count()
+    return mean_df
+
+def get_opp_avg_team_totals():
+    mean_df = pd.DataFrame()
+    store_df = team_totals.set_index('Opp', inplace=True)
+    team_list = teams
+    stats = col_stats
+    for team in team_list:
+        for stat in stats:
+            label = 'Opp_Avg_'+ stat 
+            mean_df.loc[team,label] = team_totals.loc[team,stat].sum()/team_totals.loc[team,stat].count()
+    return mean_df
+
+col_stats = ['Away','FG','FGA','3P','3PA', 'FT', 'FTA',
+             'TRB','ORB','DRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
+
+team_totals = get_team_totals()
 total_players = list_of_names()
 df_avg_stats = get_avgs_dataframe()
 teams = total_players['teams'].unique()
 new_df = total_players.merge(df_avg_stats, on='Players')
-
+teams_avg = get_avg_team_totals()
+opp_teams_avg = get_opp_avg_team_totals()
 graph_10 = df_avg_stats.head(10)
+
+###############################################################################
 
 app = dash.Dash('nba')
 
@@ -79,7 +143,7 @@ app.layout = html.Div(className = 'layout', children = [
                                 id='select_home',
                                 className="select_home",
                                 options=[{'label': i, 'value': i} for i in teams],
-                                value='')]),
+                                value='LAL')]),
         
                         html.Div(className = 'datebox', children = [
                             dcc.DatePickerSingle(
@@ -93,7 +157,21 @@ app.layout = html.Div(className = 'layout', children = [
                                 options=[{'label': i, 'value': i} for i in teams],
                                 value='Choose second team')])
                         ]),
-        
+                                        
+                    html.Div(className = 'head2head', children = [
+                            dcc.Graph(
+                                id='graph2',
+                                figure={'data':[
+                                        {'x': teams_avg.columns, 'y': teams_avg.loc['MIL',:], 'type':'bar', 'name':'Home team'},
+                                        {'x': teams_avg.columns, 'y': opp_teams_avg.loc['MIL',:], 'type':'bar', 'name':'OPP team'},
+                                        {'orientation':'h'}                                        
+                                        ],
+                                'layout': {
+                                'title': 'Heat to Head'}})
+                                    ]),
+    
+    
+    
                     html.Div(className = 'data_frame', children = [
                             dash_table.DataTable(
                                 id='table',
@@ -164,5 +242,19 @@ def df_filter(team_dd, stat):
                                         'title': 'Biggest scorers'}}
     return df.to_dict('records'), figure
     
-    
+@app.callback(
+    Output('graph2', 'figure'),
+    [Input('select_home', 'value')]
+)
+def update_graph(team_dd):
+       
+    figure={'data':[
+            {'x': teams_avg.columns, 'y': teams_avg.loc[team_dd,:], 'type':'bar', 'name':'Home team'},
+            {'x': teams_avg.columns, 'y': opp_teams_avg.loc[team_dd,:], 'type':'bar', 'name':'OPP team'},                                        
+            ],
+    'layout': {
+    'title': 'Heat to Head'}}
+    return figure
+
+
 app.run_server(debug=True)
