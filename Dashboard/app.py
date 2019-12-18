@@ -24,7 +24,7 @@ def player_avg_stat(player, stat):
     value1 = [doc['teamH_stats'][player][stat] for doc in cursor1]
     values = value + value1
     num_values = [float(num) for num in values if (num is not None) and (num is not '')]
-    stat_mean = np.array(num_values).mean().round(2)
+    stat_mean = np.array(num_values).mean().round(1)
     return player, stat, stat_mean
 
 def list_of_names():
@@ -41,7 +41,7 @@ def list_of_names():
     return total_players1
 
 def get_avgs_dataframe():
-    stats = ['PTS','FG','FGA','FG%','3P','3PA','3P%','FT','FTA','FT%','ORB','DRB','TRB','AST','STL','BLK','TOV','PF','+/-']
+    stats = ['PTS','FG','FGA','FG%','3P','3PA','3P%','FT','FTA','FT%','TRB','AST','STL','BLK','TOV','+/-']
     names = list(total_players['Players'])
     store = []
     final_list = []
@@ -73,7 +73,7 @@ def get_team_totals():
         df_b['Away'] = 0
     
         col_stats = ['PTS','FG','FGA','3P','3PA', 'FT', 'FTA',
-                     'TRB','ORB','DRB', 'AST', 'STL', 'BLK', 'TOV', 'PF' ]
+                     'TRB', 'AST', 'STL', 'BLK', 'TOV' ]
     
         df_a = pd.DataFrame(df_a[col_stats].astype('int32').sum())
         df_a.columns = [team_a]
@@ -112,7 +112,7 @@ def get_opp_avg_team_totals():
     return mean_df
 
 col_stats = ['PTS','FG','FGA','3P','3PA', 'FT', 'FTA',
-             'TRB','ORB','DRB', 'AST', 'STL', 'BLK', 'TOV', 'PF']
+             'TRB', 'AST', 'STL', 'BLK', 'TOV']
 
 team_totals = get_team_totals()
 total_players = list_of_names()
@@ -152,8 +152,7 @@ app.layout = html.Div(className = 'layout', children = [
                         # html.Div(className = 'secondteam', children = [
                         #     html.H3('Away Team', className = 'Away_Team'),
                         #     dcc.Dropdown(
-                        #         id='select_away',
-                        #         className="select_away",
+                        #         id='select_away',                      #         className="select_away",
                         #         options=[{'label': i, 'value': i} for i in teams],
                         #         value='Choose second team')])
                         ]),
@@ -163,8 +162,8 @@ app.layout = html.Div(className = 'layout', children = [
                                 id='graph2',
                                 figure={'data':[
                                         {'x': teams_avg.columns, 'y': teams_avg.loc['MIL',:], 'type':'bar', 'name':'My team'},
-                                        {'x': teams_avg.columns, 'y': opp_teams_avg.loc['MIL',:], 'type':'bar', 'name':'Opponent teams'},
-                                        {'orientation':'h'}                                    
+                                        {'x': teams_avg.columns, 'y': opp_teams_avg.loc['MIL',:], 'type':'bar', 'name':'Opponent teams',
+                                        'marker':{'color':'rgb(201,8,42)'}}                            
                                         ],
                                 'layout': {
                                 'title': 'One VS The Rest'}})
@@ -182,11 +181,16 @@ app.layout = html.Div(className = 'layout', children = [
                                 page_current=0,
                                 page_size=17,
                                 page_action='native',
-                                filter_action="native",
                                 sort_action="native",
                                 sort_mode="multi",
-                                style_header={'backgroundColor': 'rgb(211, 211, 211)',
-                                			  'fontWeight': 'bold'},
+                                style_header={'backgroundColor': 'rgb(169,169,169)',
+                                			  'fontWeight': 'bold',
+                                			  'border' : '1px solid black'},
+                                style_data= { 'border' : '1px solid black'},
+                                style_data_conditional=[
+                                        {
+                                        'if': {'row_index': 'odd'},
+                                        'backgroundColor': 'rgb(230,242,255)'}],		  
                                 style_cell_conditional=[
                                         {
                                         'if': {'column_id': c},
@@ -197,6 +201,7 @@ app.layout = html.Div(className = 'layout', children = [
                                              #'minWidth': '1550px'
                                              },
                                 style_cell={
+                                		'textAlign': 'center',
                                         'minWidth': '0px',
                                         'maxWidth': '120px',
                                         'overflow': 'hidden',
@@ -215,7 +220,7 @@ app.layout = html.Div(className = 'layout', children = [
     
                             dcc.Graph(
                                 id='graph',
-                                className="hbarplayers",
+                                className="hbarplayers",                              
                                 figure={'data':[go.Bar(x = graph_10.PTS,
                                 y = graph_10.Players,
                                 orientation = 'h')],
@@ -254,14 +259,83 @@ def df_filter(team_dd, stat):
     [Input('select_home', 'value')]
 )
 def update_graph(team_dd):
-       
+    color_graph = dict[team_dd]
+    color_graph1 = dict1[team_dd]
     figure={'data':[
-            {'x': teams_avg.columns, 'y': teams_avg.loc[team_dd,:], 'type':'bar', 'name':'My team'},
-            {'x': teams_avg.columns, 'y': opp_teams_avg.loc[team_dd,:], 'type':'bar', 'name':'Opponent teams'}                                     
+            {'x': teams_avg.columns, 'y': teams_avg.loc[team_dd,:], 'type':'bar', 'name':team_dd,
+            'marker':{'color':color_graph1}},
+            {'x': teams_avg.columns, 'y': opp_teams_avg.loc[team_dd,:], 'type':'bar', 'name':'Opponent teams',
+            'marker':{'color':color_graph}}
             ],
     'layout': {
     'title': 'One VS The Rest'}}
     return figure
 
+
+
+
+dict = {'ATL':'rgb(225,68,52)',
+        'NOP':'rgb(0,22,65)',
+        'LAL':'rgb(85,37,130)',
+        'CHI':'rgb(206,17,65)',
+        'DET':'rgb(200,16,46)',
+        'CLE':'rgb(134,0,56)',
+        'MIN':'rgb(12,35,64)',
+        'MEM':'rgb(93,118,169)',
+        'BOS':'rgb(0,122,51)',
+        'WAS':'rgb(0,43,92)',
+        'NYK':'rgb(245,132,38)',
+        'OKC':'rgb(0,125,195)',
+        'SAC':'rgb(91,43,130)',
+        'DEN':'rgb(13,34,64)',
+        'MIL':'rgb(0,71,27)',
+        'LAC':'rgb(200,16,46)',
+        'TOR':'rgb(206,17,65)',
+        'DAL':'rgb(0,83,188)',
+        'PHO':'rgb(29,17,96)',
+        'POR':'rgb(224,58,62)',
+        'UTA':'rgb(0,71,27)',
+        'MIA':'rgb(152,0,46)',
+        'PHI':'rgb(0,107,182)',
+        'ORL':'rgb(0,125,197)',
+        'IND':'rgb(253,187,48)',
+        'GSW':'rgb(255,199,44)',
+        'BRK':'rgb(0,0,0)',
+        'CHO':'rgb(0,120,140)',
+        'HOU':'rgb(206,17,65)',
+        'SAS':'rgb(196,206,211)'
+        }
+
+dict1 = {'ATL':'rgb(196,214,0)',
+        'NOP':'rgb(225,58,62)',
+        'LAL':'rgb(253,185,39)',
+        'CHI':'rgb(6,25,34)',
+        'DET':'rgb(29,66,138)',
+        'CLE':'rgb(4,30,66)',
+        'MIN':'rgb(35,97,146)',
+        'MEM':'rgb(18,23,63)',
+        'BOS':'rgb(139,111,78)',
+        'WAS':'rgb(227,24,55)',
+        'NYK':'rgb(0,107,182)',
+        'OKC':'rgb(239,59,36)',
+        'SAC':'rgb(99,113,122)',
+        'DEN':'rgb(255,198,39)',
+        'MIL':'rgb(240,235,210)',
+        'LAC':'rgb(29,66,148)',
+        'TOR':'rgb(6,25,34)',
+        'DAL':'rgb(0,43,92)',
+        'PHO':'rgb(229,95,32)',
+        'POR':'rgb(6,25,34)',
+        'UTA':'rgb(0,43,92)',
+        'MIA':'rgb(249,160,27)',
+        'PHI':'rgb(237,23,76)',
+        'ORL':'rgb(196,206,211)',
+        'IND':'rgb(0,45,98)',
+        'GSW':'rgb(29,66,138)',
+        'BRK':'rgb(255,255,255)',
+        'CHO':'rgb(29,17,96)',
+        'HOU':'rgb(6,25,34)',
+        'SAS':'rgb(6,25,34)'
+}
 
 app.run_server(debug=True)
