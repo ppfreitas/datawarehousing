@@ -15,58 +15,113 @@ h2 {
   background-color:lightblue
 }
 
-.layout {
+
+/*NBA Logo*/
+.logo {
+  width:200px;
+  height:100px;
+  margin-top: 10px;
+  margin-left: 70px;
+}
+
+/*Team Stats Header*/
+.stats_font {
+  font-weight: bold;
+  margin-bottom: 10px;
+    margin-top: 10px;
+    font-size: 35px;
+    margin-left: 70px;
+}
+
+/*Choose your team*/
+.Home_Team {
+  font-size: 100%;
+  font-weight: 900;
+  margin-bottom: 15px;
+  margin-left: 70px;
+}
+
+/*Dropdown Team Selection*/
+.select_home {
+  margin-left: 70px;
+  width: 220px;
+}
+
+/*One VS Rest Graph*/
+.onevsrest {
+  margin-left: 20px;
+}
+
+/*Player Stats Header*/
+.player_stats_font {
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  font-size: 35px;
+  margin-left: 50px;
+}
+
+/*Players Data Frame*/
+.data_frame {
+    margin-top: 10px;
+    font-family: "Raleway", Helvetica, sans-serif;
+    /*margin-left: 90px;*/
+    background-color: #f5f5f5;
+    margin-bottom: 70px;
+    margin-left: 50px;   
+}
+
+/*Choose a stat*/
+.choose_stat {
+   font-size: 100%;
+  font-weight: 900;
+  margin-bottom: 15px;
+  margin-left: 70px;
+}
+
+/*Players Stats Dropdown*/
+.dropdown2 {
+  margin-left: 70px;
+  margin-top: 10px;
+  width: 200px;
+}
+
+/*Player Stats Graph*/
+.hbarplayers {
+  margin-left: 70px;
+}
+
+
+
+
+
+
+
+
+/*.layout {
   width: 85%;
   max-width: 1600px;
   margin: 0 auto;
-}
+}*/
 
+/*
 .home_team {
 	margin-bottom: 10px;
+}*/
+
+/*.firstteam {
+  width: 30%;
+  display:inline-block;
+}*/
+
+/*.secondteam {
+  width: 30%;
+  display:inline-block; 
 }
 
-.stats_font {
-	font-weight: bold;
-	margin-bottom: 10px;
+/*.secondbox {
+  font-weight: bold;
+  margin-bottom: 10px;
     margin-top: 10px;
     font-size: 35px;
-}
-
-.firstteam {
-  width: 30%;
-  display:inline-block;
-  
-}
-
-.datebox {
-  width: 40%;
-  display:inline-block;
-  text-align:center;
-
-}
-
-.secondteam {
-  width: 30%;
-  display:inline-block;
-  
-}
-
-.logo {
-  width:200px;
-  height:80px;
-  margin-top: 10px;
-}
-
-.Home_Team {
-  font-weight: 900;
-  margin-bottom: 15px;
-}
-
-.Away_Team {
-  font-weight: 900;
-  margin-bottom: 15px;
-}
-
-.data_frame {
-    font-family: "Raleway", Helvetica, sans-serif;
-}
+}*/
