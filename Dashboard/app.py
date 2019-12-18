@@ -41,7 +41,7 @@ def list_of_names():
     return total_players1
 
 def get_avgs_dataframe():
-    stats = ['FG','FGA','FG%','3P','3PA','3P%','FT','FTA','FT%','ORB','DRB','TRB','AST','STL','BLK','TOV','PF','PTS','+/-']
+    stats = ['PTS','FG','FGA','FG%','3P','3PA','3P%','FT','FTA','FT%','ORB','DRB','TRB','AST','STL','BLK','TOV','PF','+/-']
     names = list(total_players['Players'])
     store = []
     final_list = []
@@ -72,8 +72,8 @@ def get_team_totals():
         df_a['Away'] = 1
         df_b['Away'] = 0
     
-        col_stats = ['Away','FG','FGA','3P','3PA', 'FT', 'FTA',
-                     'TRB','ORB','DRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
+        col_stats = ['PTS','FG','FGA','3P','3PA', 'FT', 'FTA',
+                     'TRB','ORB','DRB', 'AST', 'STL', 'BLK', 'TOV', 'PF' ]
     
         df_a = pd.DataFrame(df_a[col_stats].astype('int32').sum())
         df_a.columns = [team_a]
@@ -111,8 +111,8 @@ def get_opp_avg_team_totals():
             mean_df.loc[team,label] = team_totals.loc[team,stat].sum()/team_totals.loc[team,stat].count()
     return mean_df
 
-col_stats = ['Away','FG','FGA','3P','3PA', 'FT', 'FTA',
-             'TRB','ORB','DRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
+col_stats = ['PTS','FG','FGA','3P','3PA', 'FT', 'FTA',
+             'TRB','ORB','DRB', 'AST', 'STL', 'BLK', 'TOV', 'PF']
 
 team_totals = get_team_totals()
 total_players = list_of_names()
@@ -123,7 +123,7 @@ teams_avg = get_avg_team_totals()
 opp_teams_avg = get_opp_avg_team_totals()
 graph_10 = df_avg_stats.head(10)
 
-###############################################################################
+###########################################################################################################################
 
 app = dash.Dash('nba')
 
@@ -132,45 +132,47 @@ app.layout = html.Div(className = 'layout', children = [
 
                     html.Div(className = 'firstbox', children = [
                         html.Img(className= 'logo', src=app.get_asset_url('nba_logo.jpg')),           
-                        html.H2(className = 'stats_font',children = 'Stats')
+                        html.H2(className = 'stats_font',children = 'Team Stats')
                         ]),
         
                     html.Div(className= 'secondbox', children = [
         
                         html.Div(className = 'firstteam', children = [
-                            html.H3('Home Team', className = 'Home_Team'),
+                            html.H3('Choose your team', className = 'Home_Team'),
                             dcc.Dropdown(
                                 id='select_home',
                                 className="select_home",
                                 options=[{'label': i, 'value': i} for i in teams],
-                                value='LAL')]),
+                                value='LAL')])
         
-                        html.Div(className = 'datebox', children = [
-                            dcc.DatePickerSingle(
-                                id='date-selection')]),
+                        # html.Div(className = 'datebox', children = [
+                        #     dcc.DatePickerSingle(
+                        #         id='date-selection')]),
         
-                        html.Div(className = 'secondteam', children = [
-                            html.H3('Away Team', className = 'Away_Team'),
-                            dcc.Dropdown(
-                                id='select_away',
-                                className="select_away",
-                                options=[{'label': i, 'value': i} for i in teams],
-                                value='Choose second team')])
+                        # html.Div(className = 'secondteam', children = [
+                        #     html.H3('Away Team', className = 'Away_Team'),
+                        #     dcc.Dropdown(
+                        #         id='select_away',
+                        #         className="select_away",
+                        #         options=[{'label': i, 'value': i} for i in teams],
+                        #         value='Choose second team')])
                         ]),
                                         
-                    html.Div(className = 'head2head', children = [
+                    html.Div(className = 'onevsrest', children = [
                             dcc.Graph(
                                 id='graph2',
                                 figure={'data':[
-                                        {'x': teams_avg.columns, 'y': teams_avg.loc['MIL',:], 'type':'bar', 'name':'Home team'},
-                                        {'x': teams_avg.columns, 'y': opp_teams_avg.loc['MIL',:], 'type':'bar', 'name':'OPP team'},
-                                        {'orientation':'h'}                                        
+                                        {'x': teams_avg.columns, 'y': teams_avg.loc['MIL',:], 'type':'bar', 'name':'My team'},
+                                        {'x': teams_avg.columns, 'y': opp_teams_avg.loc['MIL',:], 'type':'bar', 'name':'Opponent teams'},
+                                        {'orientation':'h'}                                    
                                         ],
                                 'layout': {
-                                'title': 'Heat to Head'}})
+                                'title': 'One VS The Rest'}})
                                     ]),
     
-    
+    				html.Div(className = 'secondbox', children = [        
+                        html.H2(className = 'player_stats_font',children = 'Player Stats')
+                        ]),
     
                     html.Div(className = 'data_frame', children = [
                             dash_table.DataTable(
@@ -178,42 +180,47 @@ app.layout = html.Div(className = 'layout', children = [
                                 columns=[{"name": i, "id": i, "selectable": True} for i in new_df.columns],
                                 data=new_df.to_dict('records'),
                                 page_current=0,
-                                page_size=15,
+                                page_size=17,
                                 page_action='native',
                                 filter_action="native",
                                 sort_action="native",
                                 sort_mode="multi",
+                                style_header={'backgroundColor': 'rgb(211, 211, 211)',
+                                			  'fontWeight': 'bold'},
                                 style_cell_conditional=[
                                         {
                                         'if': {'column_id': c},
                                         'textAlign': 'left'
                                         } for c in ['Players', 'teams']],
 #                                fixed_columns={'headers': True, 'data': 1},
-                                style_table={'overflowX': 'scroll',
-                                             'overflowY': 'scroll',
-                                             'minWidth': '1550px'},
+                                style_table={'overflowX': 'scroll'#,
+                                             #'minWidth': '1550px'
+                                             },
                                 style_cell={
                                         'minWidth': '0px',
-                                        'maxWidth': '180px',
+                                        'maxWidth': '120px',
                                         'overflow': 'hidden',
                                         'textOverflow': 'ellipsis'})
                                     ]),
                                     
                     html.Div(className = 'graph', children = [
                             
+                            html.H3('Choose a stat', className = 'choose_stat'),
+
                             dcc.Dropdown(
                                 id='select_stats',
-                                className="dropdown",
+                                className="dropdown2",
                                 options=[{'label': i, 'value': i} for i in new_df.columns[2:]],
                                 value='PTS'),
     
                             dcc.Graph(
                                 id='graph',
+                                className="hbarplayers",
                                 figure={'data':[go.Bar(x = graph_10.PTS,
                                 y = graph_10.Players,
                                 orientation = 'h')],
                                 'layout': {
-                                'title': 'Biggest scorers'}})
+                                'title': 'Player Comparison'}})
                                 ])
 
     ])
@@ -239,7 +246,7 @@ def df_filter(team_dd, stat):
                                y = df2.Players,
                                 orientation = 'h')],
                                 'layout': {
-                                        'title': 'Biggest scorers'}}
+                                        'title': 'Player Comparison'}}
     return df.to_dict('records'), figure
     
 @app.callback(
@@ -249,11 +256,11 @@ def df_filter(team_dd, stat):
 def update_graph(team_dd):
        
     figure={'data':[
-            {'x': teams_avg.columns, 'y': teams_avg.loc[team_dd,:], 'type':'bar', 'name':'Home team'},
-            {'x': teams_avg.columns, 'y': opp_teams_avg.loc[team_dd,:], 'type':'bar', 'name':'OPP team'},                                        
+            {'x': teams_avg.columns, 'y': teams_avg.loc[team_dd,:], 'type':'bar', 'name':'My team'},
+            {'x': teams_avg.columns, 'y': opp_teams_avg.loc[team_dd,:], 'type':'bar', 'name':'Opponent teams'}                                     
             ],
     'layout': {
-    'title': 'Heat to Head'}}
+    'title': 'One VS The Rest'}}
     return figure
 
 
