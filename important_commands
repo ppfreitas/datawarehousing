@@ -1,0 +1,37 @@
+docker run -d --name mongodb -p 27017:27017 mongo
+docker exec -it mongodb bash
+
+apt-get update && apt-get upgrade
+dpkg -l cron
+apt-get install cron
+# verify if its running
+systemctl status cron
+#configure jobs
+nano /etc/crontab
+
+
+
+# examples
+30 4 * * * /path/to/script/backup-script.sh
+0 18 1 * * /path/to/script/backup-script.sh
+# restart
+systemctl restart cron
+
+# run everyday at 5am
+
+MAILTO="pp_freitas@hotmail.com"
+0 5 * * * python update.py
+
+docker build -t ppfreitas/nbastats .
+docker push ppfreitas/nbastats
+docker run --name nbaseason --net host ppfreitas/nbastats
+
+docker build -t ppfreitas/nbadash .
+docker push ppfreitas/nbadash
+docker run --name nbadash --net host ppfreitas/nbadash
+
+
+
+docker exec -it nbaseason bash
+
+docker restart nbaseason
