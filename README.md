@@ -46,6 +46,6 @@ Final step is to setup cron to update oud database daily. To do so, run ```cront
 ```
 ## Part 2
 
-We dockerized part 2, so it can be run on ```docker run --name nbadash --net host ppfreitas/nbadash``` or just run the ```app.py``` in the Dashboard Docker Image.
+We dockerized part 2, so it can be run on ```docker run --name nbadash --net host ppfreitas/nbadash``` or just run the ```app.py``` in the Dashboard Docker Image folder.
 
 The dashboard might take a few seconds to load and this happens because some of the queries we wrote are really slow. If we had more time we would work a little bit more on that.
